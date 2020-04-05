@@ -1,0 +1,18 @@
+const cors = require('cors');
+const express = require('express');
+var session = require('express-session');
+const bodyParser = require('body-parser');
+var cookieParser = require('cookie-parser');
+
+const routes = require('../controllers');
+
+const app = express();
+app.use(cors());
+app.use(cookieParser());
+app.use(session({ secret: '1ae007bc098eef3b'}));
+app.use(bodyParser());
+
+app.use(routes);
+app.listen(6565, () => {
+    console.log('server running on port 6565');
+})

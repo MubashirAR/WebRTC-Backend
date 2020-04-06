@@ -3,6 +3,10 @@ const express = require('express');
 var session = require('express-session');
 const bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
+var mongoose = require('mongoose');
+
+
+mongoose.connect('mongodb://localhost/socialNetwork', {useNewUrlParser: true});
 
 const routes = require('../controllers');
 
@@ -13,6 +17,55 @@ app.use(session({ secret: '1ae007bc098eef3b'}));
 app.use(bodyParser());
 
 app.use(routes);
-app.listen(6565, () => {
+let http = app.listen(6565, () => {
     console.log('server running on port 6565');
 })
+var io = require('socket.io')(http);
+let users = {};
+io.on('connection', function(socket){
+  console.log('a user connected');
+  socket.on('register', function(username){
+      console.log({username})
+    if(users[username]){
+        socket.emit('invalid_registration', 'Username taken');
+        return;
+    }
+    users[username] = socket;
+    socket.emit('successful_registration', 'You are now registered!');
+  });
+  socket.on('new-ice-candidate', function(message){
+    console.log('candidate to:', message.to);
+    if(!users[message.to]) {
+        socket.emit('invalid_message', 'The receiver is unavailable!')
+        return;
+    }
+    let index = Object.values(users).findIndex(s => s === socket);
+    let key = Object.keys(users)[index];
+    users[message.to].emit('iceCandidate', {candidate: message.candidate, from: key})
+  });
+  socket.on('offer', function(message){
+    console.log('offer to:', message.to);
+    if(!users[message.to]) {
+        socket.emit('invalid_message', 'The receiver is unavailable!')
+        return;
+    }
+    let index = Object.values(users).findIndex(s => s === socket);
+    let key = Object.keys(users)[index];
+    users[message.to].emit('offer', {offer: message.offer, from: key})
+  });
+  socket.on('answer', function(message){
+    console.log('answer to:', message.to);
+    if(!users[message.to]) {
+        socket.emit('invalid_message', 'The receiver is unavailable!')
+        return;
+    }
+    let index = Object.values(users).findIndex(s => s === socket);
+    let key = Object.keys(users)[index];
+    users[message.to].emit('answer', {answer: message.answer, from: key})
+  });
+  socket.on('disconnect', function(){
+      let index = Object.values(users).findIndex(s => s === socket);
+      let key = Object.keys(users)[index];
+      delete users[key];
+  })
+});

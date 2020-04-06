@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const services = require('../lib/services');
 const middlewares = require('../middlewares');
-router.get('/', middlewares.checkUser, (req, res) => res.send({ msg: 'Welcome to the api', user: req.session.user }));
+router.get('/', (req, res) => res.send({ msg: 'Welcome to the api', user: req.session.user }));
 router.post('/login', async (req, res) => {
   try {
     const { username, password } = req.body;

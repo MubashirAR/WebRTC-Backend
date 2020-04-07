@@ -17,8 +17,9 @@ app.use(cors());
 app.use(bodyParser());
 
 app.use(routes);
-let http = app.listen(6565, () => {
-    console.log('server running on port 6565');
+let port = process.env.PORT || 6565;
+let http = app.listen(port, () => {
+    console.log(`server running on port ${port}`);
 })
 var io = require('socket.io')(http);
 let users = {};

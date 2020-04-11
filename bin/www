@@ -21,7 +21,7 @@ const store = new MongoStore({
 store.on('error', err => {
   console.log(err);
 });
-app.use(cors({ origin: 'https://mubashir-video-chat.firebaseapp.com/' }));
+app.use(cors({ origin: 'https://mubashir-video-chat.firebaseapp.com' }));
 app.use(cookieParser('1ae007bc098eef3b'));
 app.use(session({ store, secret: '1ae007bc098eef3b', cookie: { maxAge: 24 * 60 * 60 * 1000, httpOnly: true, path: '/' } }));
 app.use(bodyParser.json());

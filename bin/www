@@ -7,6 +7,7 @@ const bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var mongoose = require('mongoose');
 const MongoStore = require('connect-mongo')(session);
+const path = require('path');
 
 mongoose.connect('mongodb+srv://mubashir:foodApp@cluster0-im53z.mongodb.net/test?retryWrites=true');
 
@@ -21,12 +22,28 @@ const store = new MongoStore({
 store.on('error', err => {
   console.log(err);
 });
-app.use(cors({ origin: 'https://mubashir-video-chat.firebaseapp.com', credentials: true, methods: ['GET', 'POST', 'PUT'] }));
+// app.set(
+//   '/static/js',
+//   () => console.log(path.join(__dirname, '/../public/static/js')),
+//   express.static(path.join(__dirname, '/../public/static/js'))
+// );
+// app.set('/static/css', () => console.log(path.join(__dirname, '/../public/static')), express.static(path.join(__dirname, '/../public/static/css')));
+app.use(cors());
 app.use(cookieParser('1ae007bc098eef3b'));
-app.use(session({ store, secret: '1ae007bc098eef3b', cookie: { maxAge: 24 * 60 * 60 * 1000, httpOnly: true, path: '/', domain: 'https://mubashir-video-chat.firebaseapp.com' } }));
+app.use(session({ store, secret: '1ae007bc098eef3b', cookie: { maxAge: 24 * 60 * 60 * 1000, httpOnly: true, path: '/' } }));
 app.use(bodyParser.json());
 app.set('trust proxy', 1);
 app.use(routes);
+// app.use(
+//   '/static/css',
+//   (req) => console.log(path.join(__dirname, '/../public'), req.url),
+//   express.static(path.join(__dirname, '/../public/static/css'))
+// );
+app.use(express.static('public'))
+app.get('*', (req, res) => {
+  console.log('* path access', path.join(__dirname, '/../public', 'index.html'), req.url);
+  res.sendFile(path.join(__dirname, '/../public', 'index.html'));
+});
 let port = process.env.PORT || 6565;
 let http = app.listen(port, () => {
   console.log(`server running on port ${port}`);

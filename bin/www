@@ -6,7 +6,7 @@ var session = require('express-session');
 const bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var mongoose = require('mongoose');
-const MongoStore = require('connect-mongo')(session)
+const MongoStore = require('connect-mongo')(session);
 
 mongoose.connect('mongodb+srv://mubashir:foodApp@cluster0-im53z.mongodb.net/test?retryWrites=true');
 
@@ -14,14 +14,14 @@ const routes = require('../controllers');
 
 const app = express();
 const store = new MongoStore({
-  mongooseConnection: mongoose.connection
+  mongooseConnection: mongoose.connection,
   // uri: 'mongodb+srv://mubashir:foodApp@cluster0-im53z.mongodb.net/test?retryWrites=true',
   // collection: 'sessions'
 });
 store.on('error', err => {
-  console.log(err)
-})
-app.use(cors());
+  console.log(err);
+});
+app.use(cors({ origin: 'https://mubashir-video-chat.firebaseapp.com/' }));
 app.use(cookieParser('1ae007bc098eef3b'));
 app.use(session({ store, secret: '1ae007bc098eef3b', cookie: { maxAge: 24 * 60 * 60 * 1000, httpOnly: true, path: '/' } }));
 app.use(bodyParser.json());

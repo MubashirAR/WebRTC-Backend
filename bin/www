@@ -12,7 +12,7 @@ const path = require('path');
 mongoose.connect('mongodb+srv://mubashir:foodApp@cluster0-im53z.mongodb.net/test?retryWrites=true');
 
 const routes = require('../controllers');
-
+// TODO https://stackoverflow.com/questions/10348906/how-to-know-if-a-request-is-http-or-https-in-node-js
 const app = express();
 const store = new MongoStore({
   mongooseConnection: mongoose.connection,

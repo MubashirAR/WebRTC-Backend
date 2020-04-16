@@ -26,6 +26,15 @@ router.post('/login', async (req, res) => {
     res.status(error.status || 400).json(error);
   }
 });
+router.post('/logout', async (req, res) => {
+  try {
+    req.session.destroy();
+    res.json({msg: 'You have logged out!'})
+  } catch (error) {
+    console.log({ error });
+    res.status(error.status || 400).json(error);
+  }
+});
 router.post('/register', async (req, res) => {
   try {
     const { username, email, password } = req.body;
